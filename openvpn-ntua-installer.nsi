@@ -84,7 +84,7 @@ Section "Download and install openvpn from openvpn.net" OpenVPN_installer
 
   ;SectionIn RO
   
-  NSISdl::download http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.2-I003-i686.exe "$TEMP\openvpn-install-2.3.2-I001-i686.exe"
+  NSISdl::download http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.2-I003-i686.exe "$TEMP\openvpn-install-2.3.2-I003-i686.exe"
   Pop $R0 ;Get the return value
     StrCmp $R0 "success" +3
       MessageBox MB_OK "Download failed: $R0"
