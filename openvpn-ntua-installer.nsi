@@ -12,7 +12,8 @@ SetCompressor lzma
 
 ShowInstDetails show
 
-
+!define URL "http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.2-I003-i686.exe"
+!define FILENAME "openvpn-install-2.3.2-I003-i686.exe"
 
 !define STATIC resources
 !define MUI_ICON "${STATIC}\images\icon.ico" 
@@ -84,13 +85,13 @@ Section "Download and install openvpn from openvpn.net" OpenVPN_installer
 
   ;SectionIn RO
   
-  NSISdl::download http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.2-I003-i686.exe "$TEMP\openvpn-install-2.3.2-I003-i686.exe"
+  NSISdl::download ${URL} "$TEMP\${FILENAME}"
   Pop $R0 ;Get the return value
     StrCmp $R0 "success" +3
       MessageBox MB_OK "Download failed: $R0"
       Quit
 
-   ExecWait "$TEMP\openvpn-install-2.3.2-I001-i686.exe"
+   ExecWait "$TEMP\${FILENAME}"
    DetailPrint "openvpn installer returned $0"
    IfErrors 0 noError
       MessageBox MB_OK "OpenVPN installation failed" 
