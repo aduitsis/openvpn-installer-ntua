@@ -146,24 +146,24 @@ Section "NTUA openvpn configuration files" OpenVPN_conf
 	; push two arguments
 	; 1.File name as will be saved on local machine 
 	; 2.URL of the file to be downloaded
-	Push "ntua with IPv6.ovpn"
-	Push "http://www.noc.ntua.gr/openvpn/ntua%20with%20IPv6.ovpn"
-	Call download_file
+;	Push "ntua with IPv6.ovpn"
+;	Push "http://www.noc.ntua.gr/openvpn/ntua%20with%20IPv6.ovpn"
+;	Call download_file
 	Push "ntua.ovpn"
 	Push "http://www.noc.ntua.gr/openvpn/ntua.ovpn"
 	Call download_file
-	Push "ntua-udp.ovpn"
-	Push "http://www.noc.ntua.gr/openvpn/ntua-udp.ovpn"
-	Call download_file
-	Push "ntua-tcp.ovpn"	
-	Push "http://www.noc.ntua.gr/openvpn/ntua-tcp.ovpn"	
-	Call download_file
-	Push "cacert.crt"
-	Push "http://www.noc.ntua.gr/openvpn/cacert.crt"
-	Call download_file
-	Push "ROOT-NTUA-cacert.crt"
-	Push "http://www.noc.ntua.gr/openvpn/ROOT-NTUA-cacert.crt"
-	Call download_file
+;	Push "ntua-udp.ovpn"
+;	Push "http://www.noc.ntua.gr/openvpn/ntua-udp.ovpn"
+;	Call download_file
+;	Push "ntua-tcp.ovpn"	
+;	Push "http://www.noc.ntua.gr/openvpn/ntua-tcp.ovpn"	
+;	Call download_file
+;	Push "cacert.crt"
+;	Push "http://www.noc.ntua.gr/openvpn/cacert.crt"
+;	Call download_file
+;	Push "ROOT-NTUA-cacert.crt"
+;	Push "http://www.noc.ntua.gr/openvpn/ROOT-NTUA-cacert.crt"
+;	Call download_file
 
 	
 SectionEnd
