@@ -1,19 +1,23 @@
 Name openvpn
 
-; The file to write
-OutFile "openvpn-ntua-installer.exe"
 
 RequestExecutionLevel admin
 
 SetCompressor lzma
 
 !include MUI2.nsh
+!include "WinVer.nsh"
 ;--------------------------------
 
 ShowInstDetails show
 
 !define URL "http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.2-I003-i686.exe"
 !define FILENAME "openvpn-install-2.3.2-I003-i686.exe"
+
+; The file to write
+OutFile "ntua-${FILENAME}"
+
+!define RASCMAK_INSTALL_COMMAND "Dism /online /enable-feature /featurename:rascmak"
 
 !define STATIC resources
 !define MUI_ICON "${STATIC}\images\icon.ico" 
@@ -74,6 +78,10 @@ LangString DESC_OpenVPN_installer ${LANG_GREEK} "Εγκατάσταση του ${PRODUCT_NAME}
 
 LangString DESC_Conf ${LANG_GREEK} "Αρχεία ρυθμίσεων για σύνδεση στο ΕΜΠ."
 LangString DESC_Conf ${LANG_ENGLISH} "NTUA services configuration."
+
+LangString rascmak_warn ${LANG_GREEK} "Επιλέξατε να εγκατασταθεί και το RAS Connection Manager Administration Kit.$\n$\nH εγκατάσταση του RAS Connection Manager Administration Kit δεν είναι απαραίτητη για αυτή την έκδοση των Windows.$\n$\nΓια να επιβεβαιώσετε ότι ξέρετε τί κάνετε, πιέστε ΟΚ." 
+LangString rascmak_warn ${LANG_ENGLISH} "You have selected to install the RASConnection Manager Administration Kit$\n$\nThe installation of the RAS Connection Manager Administration Kit is not needed in this version of Windows.$\n$\nTo confirm that you actually know what you are doing, please press OK, otherwise press Cancel." 
+
 
 
 
@@ -168,6 +176,30 @@ Section "NTUA openvpn configuration files" OpenVPN_conf
 	
 SectionEnd
 
+Section "(only needed by Windows 8) Install Windows RASCMAK feature" rascmak_enable
+
+
+	${If} ${AtMostWin7}
+
+		MessageBox MB_OK $(rascmak_warn)
+
+	${EndIf}
+
+	!include "x64.nsh"
+
+	; 64-bit systems are redicting our calls to wow64, so we may have temporarily disable this redirection
+	${If} ${RunningX64} 
+		!insertmacro DisableX64FSRedirection 
+		ExecWait "${RASCMAK_INSTALL_COMMAND}"
+		!insertmacro EnableX64FSRedirection 
+	${Else}
+		ExecWait "${RASCMAK_INSTALL_COMMAND}"
+	${EndIf}
+
+
+
+SectionEnd
+
 Function download_file
 	Pop $0
 	Pop $1
@@ -190,6 +222,10 @@ Function .onInit
 	; ${If} ${RunningX64}
 		; Call enable64 
 	; ${EndIf} 
+
+	${If} ${AtMostWin7}
+		!insertmacro UnselectSection ${rascmak_enable}
+	${EndIf}		
 
 FunctionEnd
 
@@ -216,9 +252,19 @@ FunctionEnd
 
 
 
-; Function .onSelChange
+Function .onSelChange
 	
-	; Push $0
+	Push $0
+
+	${If} ${AtMostWin7}
+		SectionGetFlags ${rascmak_enable} $0
+		IntOp $0 $0 & ${SF_SELECTED}
+		IntCmp $0 ${SF_SELECTED} 0 deselected deselected
+			MessageBox MB_ICONEXCLAMATION|MB_OKCANCEL  $(rascmak_warn) IDOK dontdoit
+				!insertmacro UnselectSection ${rascmak_enable}	
+			dontdoit:
+		deselected:
+	${EndIf}
 	
 	; SectionGetFlags ${OpenVPN_installer} $0
 	; IntOp $0 $0 & ${SF_SELECTED}
@@ -241,9 +287,9 @@ FunctionEnd
 
 	; done:
  
-	; Pop $0
+	Pop $0
 	
-; FunctionEnd
+FunctionEnd
 
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
