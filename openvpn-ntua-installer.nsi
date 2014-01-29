@@ -7,12 +7,20 @@ SetCompressor lzma
 
 !include MUI2.nsh
 !include "WinVer.nsh"
+!include "FileFunc.nsh"
 ;--------------------------------
 
 ShowInstDetails show
 
 !define URL "http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.2-I003-i686.exe"
 !define FILENAME "openvpn-install-2.3.2-I003-i686.exe"
+
+Var /GLOBAL destination_dir
+Var /GLOBAL openvpn_bin_dir
+Var /GLOBAL openvpn_gui_exe
+Var /GLOBAL rascmak_warned
+Var /GLOBAL openvpn_gui_warned 
+
 
 ; The file to write
 OutFile "ntua-${FILENAME}"
@@ -82,7 +90,8 @@ LangString DESC_Conf ${LANG_ENGLISH} "NTUA services configuration."
 LangString rascmak_warn ${LANG_GREEK} "Επιλέξατε να εγκατασταθεί και το RAS Connection Manager Administration Kit.$\n$\nH εγκατάσταση του RAS Connection Manager Administration Kit δεν είναι απαραίτητη για αυτή την έκδοση των Windows.$\n$\nΓια να επιβεβαιώσετε ότι ξέρετε τί κάνετε, πιέστε ΟΚ." 
 LangString rascmak_warn ${LANG_ENGLISH} "You have selected to install the RASConnection Manager Administration Kit$\n$\nThe installation of the RAS Connection Manager Administration Kit is not needed in this version of Windows.$\n$\nTo confirm that you actually know what you are doing, please press OK, otherwise press Cancel." 
 
-
+LangString openvpngui_warn ${LANG_GREEK} "Σε αυτή την έκδοση των Windows δεν είναι απαραίτητο να αλλαχτεί ο τρόπος με τον οποίο εκτελείται το openvpn-gui.$\n$\nΓια να επιβεβαιώσετε ότι ξέρετε τί κάνετε, πιέστε ΟΚ." 
+LangString openvpngui_warn ${LANG_ENGLISH} "In this Windows version the openvpn-gui execution method does not need to be modified.$\n$\nTo confirm that you actually know what you are doing, please press OK, otherwise press Cancel."
 
 
 
@@ -128,28 +137,31 @@ SectionEnd
 ; SectionEnd
 
 Section "NTUA openvpn configuration files" OpenVPN_conf
-	Var /GLOBAL destination_dir
-	ReadRegStr $destination_dir HKLM "SOFTWARE\OpenVPN-GUI" 'config_dir'
-	IfErrors 0 config_dir_ok
-		DetailPrint "cannot find HKLM\Software\OpenVPN-GUI config_dir"
-		ReadRegStr $destination_dir HKLM "SOFTWARE\OpenVPN" 'config_dir'
-		IfErrors 0 config_dir_ok
-			DetailPrint "cannot find HKLM\Software\OpenVPN config_dir"
-			ReadRegStr $destination_dir HKLM "Software\OpenVPN" ''
-			ifErrors 0 default_dir_found
-				MessageBox MB_ICONEXCLAMATION|MB_OK "Unable to locate openvpn installation" IDOK 
-				Quit
-		
-	
+
+
+	;ReadRegStr $destination_dir HKLM "SOFTWARE\OpenVPN-GUI" 'config_dir'
+	;IfErrors 0 config_dir_ok
+	;	DetailPrint "cannot find HKLM\Software\OpenVPN-GUI config_dir"
+	;	ReadRegStr $destination_dir HKLM "SOFTWARE\OpenVPN" 'config_dir'
+	;	IfErrors 0 config_dir_ok
+	;		DetailPrint "cannot find HKLM\Software\OpenVPN config_dir"
+	;		ReadRegStr $destination_dir HKLM "Software\OpenVPN" ''
+	;		ifErrors 0 default_dir_found
+	;			MessageBox MB_ICONEXCLAMATION|MB_OK "Unable to locate openvpn installation" IDOK 
+	;			Quit
+	;	
     
-	default_dir_found:
-		DetailPrint "detected openvpn location $destination_dir"
-		StrCpy $destination_dir "$destination_dir/config"
-	config_dir_ok:
-		DetailPrint "configuration files go to $destination_dir"
+	;default_dir_found:
+	;	DetailPrint "detected openvpn location $destination_dir"
+	;	StrCpy $destination_dir "$destination_dir/config"
+	;config_dir_ok:
+	;	DetailPrint "configuration files go to $destination_dir"
 		
+	call detect_openvpn_destination	
 		
 	SetOutPath $destination_dir
+	DetailPrint "Putting conf file in $destination_dir"
+	Quit
 
 	; push two arguments
 	; 1.File name as will be saved on local machine 
@@ -200,6 +212,53 @@ Section "(only needed by Windows 8) Install Windows RASCMAK feature" rascmak_ena
 
 SectionEnd
 
+Section "(only needed by Windows 8) Modify OpenVPN-GUI to run as admin and in compatibility mode" openvpngui_modify
+
+	call detect_openvpn_destination
+	
+	ClearErrors
+	; ReadRegStr $openvpn_executable HKLM "SOFTWARE\OpenVPN-GUI" 'config_dir'
+	IfFileExists $openvpn_gui_exe continue1 
+		MessageBox MB_ICONEXCLAMATION|MB_OK "$openvpn_gui_exe does not exist!"
+		Quit
+	continue1:
+        WriteRegStr HKCU "Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers" "$openvpn_gui_exe" "~ WIN7RTM RUNASADMIN"
+        IfErrors 0 +2
+        MessageBox MB_ICONEXCLAMATION|MB_OK "Unable to write to the registry" IDOK end
+	Goto done2
+	end:
+	Quit
+	done2:
+
+SectionEnd
+
+Function detect_openvpn_destination
+
+	ReadRegStr $destination_dir HKLM "SOFTWARE\OpenVPN-GUI" 'config_dir'
+	IfErrors 0 config_dir_ok
+		DetailPrint "cannot find HKLM\Software\OpenVPN-GUI config_dir"
+		ReadRegStr $destination_dir HKLM "SOFTWARE\OpenVPN" 'config_dir'
+		IfErrors 0 config_dir_ok
+			DetailPrint "cannot find HKLM\Software\OpenVPN config_dir"
+			ReadRegStr $destination_dir HKLM "Software\OpenVPN" ''
+			ifErrors 0 default_dir_found
+				MessageBox MB_ICONEXCLAMATION|MB_OK "Unable to locate openvpn installation" IDOK 
+				Quit
+	default_dir_found:
+		DetailPrint "detected openvpn location $destination_dir"
+		StrCpy $destination_dir "$destination_dir\config"
+	config_dir_ok:
+		DetailPrint "configuration files go to $destination_dir"
+
+	${GetParent} $destination_dir $openvpn_bin_dir
+	DetailPrint "Parent of $destination_dir is $openvpn_bin_dir"
+	StrCpy $openvpn_bin_dir "$openvpn_bin_dir\bin"
+	DetailPrint "OpenVPN-GUI should be in $openvpn_bin_dir"
+	StrCpy $openvpn_gui_exe "$openvpn_bin_dir\openvpn-gui.exe"
+	DetailPrint "OpenVPN-GUI executable should be $openvpn_gui_exe"
+
+FunctionEnd
+
 Function download_file
 	Pop $0
 	Pop $1
@@ -225,7 +284,12 @@ Function .onInit
 
 	${If} ${AtMostWin7}
 		!insertmacro UnselectSection ${rascmak_enable}
+		!insertmacro UnselectSection ${openvpngui_modify}
 	${EndIf}		
+
+	StrCpy $rascmak_warned 0 
+	StrCpy $openvpn_gui_warned 0
+
 
 FunctionEnd
 
@@ -257,13 +321,23 @@ Function .onSelChange
 	Push $0
 
 	${If} ${AtMostWin7}
-		SectionGetFlags ${rascmak_enable} $0
-		IntOp $0 $0 & ${SF_SELECTED}
-		IntCmp $0 ${SF_SELECTED} 0 deselected deselected
-			MessageBox MB_ICONEXCLAMATION|MB_OKCANCEL  $(rascmak_warn) IDOK dontdoit
-				!insertmacro UnselectSection ${rascmak_enable}	
-			dontdoit:
+		IntCmp $rascmak_warned 0 0 deselected deselected
+			SectionGetFlags ${rascmak_enable} $0
+			IntOp $0 $0 & ${SF_SELECTED}
+			IntCmp $0 ${SF_SELECTED} 0 deselected deselected
+				StrCpy $rascmak_warned 1
+				MessageBox MB_ICONEXCLAMATION|MB_OKCANCEL  $(rascmak_warn) IDOK deselected
+					!insertmacro UnselectSection ${rascmak_enable}	
 		deselected:
+
+		IntCmp $openvpn_gui_warned 0 0 deselected2 deselected2
+			SectionGetFlags ${openvpngui_modify} $0
+			IntOp $0 $0 & ${SF_SELECTED}
+			IntCmp $0 ${SF_SELECTED} 0 deselected2 deselected2
+				StrCpy $openvpn_gui_warned 1
+				MessageBox MB_ICONEXCLAMATION|MB_OKCANCEL  $(openvpngui_warn) IDOK deselected2
+					!insertmacro UnselectSection ${openvpngui_modify}
+		deselected2:
 	${EndIf}
 	
 	; SectionGetFlags ${OpenVPN_installer} $0
