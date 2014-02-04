@@ -158,10 +158,9 @@ Section "NTUA openvpn configuration files" OpenVPN_conf
 	;	DetailPrint "configuration files go to $destination_dir"
 		
 	call detect_openvpn_destination	
-		
+
 	SetOutPath $destination_dir
 	DetailPrint "Putting conf file in $destination_dir"
-	Quit
 
 	; push two arguments
 	; 1.File name as will be saved on local machine 
