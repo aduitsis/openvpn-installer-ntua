@@ -12,7 +12,7 @@ SetCompressor lzma
 
 ShowInstDetails show
 
-!define FILENAME "openvpn-install-2.3.6-I602-i686.exe"
+!define FILENAME "openvpn-install-2.3.11-I001-i686.exe"
 !define URL "http://swupdate.openvpn.org/community/releases/${FILENAME}"
 
 Var /GLOBAL destination_dir
