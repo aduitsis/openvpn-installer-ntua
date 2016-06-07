@@ -19,7 +19,7 @@ Var /GLOBAL destination_dir
 Var /GLOBAL openvpn_bin_dir
 Var /GLOBAL openvpn_gui_exe
 Var /GLOBAL rascmak_warned
-Var /GLOBAL openvpn_gui_warned 
+Var /GLOBAL openvpn_gui_warned
 
 
 ; The file to write
@@ -28,11 +28,11 @@ OutFile "ntua-${FILENAME}"
 !define RASCMAK_INSTALL_COMMAND "Dism /online /enable-feature /featurename:rascmak"
 
 !define STATIC resources
-!define MUI_ICON "${STATIC}\images\icon.ico" 
+!define MUI_ICON "${STATIC}\images\icon.ico"
 
 !define MUI_COMPONENTSPAGE_SMALLDESC
 !define MUI_FINISHPAGE_SHOWREADME_CHECKED
-  
+
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_BITMAP "${STATIC}\images\openvpn-ntua.bmp"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -59,9 +59,9 @@ OutFile "ntua-${FILENAME}"
 !insertmacro MUI_LANGUAGE "Greek"
 !define MUI_LANGDLL_ALWAYSSHOW
 !define MUI_LANGDLL_ALLLANGUAGES
- 
 
-  
+
+
 ; Pages
 
 ;Page components
@@ -87,10 +87,10 @@ LangString DESC_OpenVPN_installer ${LANG_GREEK} "Εγκατάσταση του ${PRODUCT_NAME}
 LangString DESC_Conf ${LANG_GREEK} "Αρχεία ρυθμίσεων για σύνδεση στο ΕΜΠ."
 LangString DESC_Conf ${LANG_ENGLISH} "NTUA services configuration."
 
-LangString rascmak_warn ${LANG_GREEK} "Επιλέξατε να εγκατασταθεί και το RAS Connection Manager Administration Kit.$\n$\nH εγκατάσταση του RAS Connection Manager Administration Kit δεν είναι απαραίτητη για αυτή την έκδοση των Windows.$\n$\nΓια να επιβεβαιώσετε ότι ξέρετε τί κάνετε, πιέστε ΟΚ." 
-LangString rascmak_warn ${LANG_ENGLISH} "You have selected to install the RASConnection Manager Administration Kit$\n$\nThe installation of the RAS Connection Manager Administration Kit is not needed in this version of Windows.$\n$\nTo confirm that you actually know what you are doing, please press OK, otherwise press Cancel." 
+LangString rascmak_warn ${LANG_GREEK} "Επιλέξατε να εγκατασταθεί και το RAS Connection Manager Administration Kit.$\n$\nH εγκατάσταση του RAS Connection Manager Administration Kit δεν είναι απαραίτητη για αυτή την έκδοση των Windows.$\n$\nΓια να επιβεβαιώσετε ότι ξέρετε τί κάνετε, πιέστε ΟΚ."
+LangString rascmak_warn ${LANG_ENGLISH} "You have selected to install the RASConnection Manager Administration Kit$\n$\nThe installation of the RAS Connection Manager Administration Kit is not needed in this version of Windows.$\n$\nTo confirm that you actually know what you are doing, please press OK, otherwise press Cancel."
 
-LangString openvpngui_warn ${LANG_GREEK} "Σε αυτή την έκδοση των Windows δεν είναι απαραίτητο να αλλαχτεί ο τρόπος με τον οποίο εκτελείται το openvpn-gui.$\n$\nΓια να επιβεβαιώσετε ότι ξέρετε τί κάνετε, πιέστε ΟΚ." 
+LangString openvpngui_warn ${LANG_GREEK} "Σε αυτή την έκδοση των Windows δεν είναι απαραίτητο να αλλαχτεί ο τρόπος με τον οποίο εκτελείται το openvpn-gui.$\n$\nΓια να επιβεβαιώσετε ότι ξέρετε τί κάνετε, πιέστε ΟΚ."
 LangString openvpngui_warn ${LANG_ENGLISH} "In this Windows version the openvpn-gui execution method does not need to be modified.$\n$\nTo confirm that you actually know what you are doing, please press OK, otherwise press Cancel."
 
 
@@ -101,7 +101,7 @@ LangString openvpngui_warn ${LANG_ENGLISH} "In this Windows version the openvpn-
 Section "Download and install openvpn from openvpn.net" OpenVPN_installer
 
   ;SectionIn RO
-  
+
   NSISdl::download ${URL} "$TEMP\${FILENAME}"
   Pop $R0 ;Get the return value
     StrCmp $R0 "success" +3
@@ -111,7 +111,7 @@ Section "Download and install openvpn from openvpn.net" OpenVPN_installer
    ExecWait "$TEMP\${FILENAME}"
    DetailPrint "openvpn installer returned $0"
    IfErrors 0 noError
-      MessageBox MB_OK "OpenVPN installation failed" 
+      MessageBox MB_OK "OpenVPN installation failed"
    Quit
   noError:
 
@@ -120,7 +120,7 @@ SectionEnd
 
 ; Section "Download and install openvpn from openvpn.net using 64-bit installer" OpenVPN_installer64
 
-  
+
   ; NSISdl::download http://swupdate.openvpn.org/community/releases/openvpn-install-2.3.2-I001-x86_64.exe "$TEMP\openvpn-install-2.3.2-I001-x86_64.exe"
   ; Pop $R0 ;Get the return value
     ; StrCmp $R0 "success" +3
@@ -130,7 +130,7 @@ SectionEnd
    ; ExecWait "$TEMP\openvpn-install-2.3.2-I001-x86_64.exe"
    ; DetailPrint "openvpn installer returned $0"
    ; IfErrors 0 noError
-      ; MessageBox MB_OK "OpenVPN installation failed" 
+      ; MessageBox MB_OK "OpenVPN installation failed"
    ; Quit
   ; noError:
 
@@ -147,23 +147,23 @@ Section "NTUA openvpn configuration files" OpenVPN_conf
 	;		DetailPrint "cannot find HKLM\Software\OpenVPN config_dir"
 	;		ReadRegStr $destination_dir HKLM "Software\OpenVPN" ''
 	;		ifErrors 0 default_dir_found
-	;			MessageBox MB_ICONEXCLAMATION|MB_OK "Unable to locate openvpn installation" IDOK 
+	;			MessageBox MB_ICONEXCLAMATION|MB_OK "Unable to locate openvpn installation" IDOK
 	;			Quit
-	;	
-    
+	;
+
 	;default_dir_found:
 	;	DetailPrint "detected openvpn location $destination_dir"
 	;	StrCpy $destination_dir "$destination_dir/config"
 	;config_dir_ok:
 	;	DetailPrint "configuration files go to $destination_dir"
-		
-	call detect_openvpn_destination	
+
+	call detect_openvpn_destination
 
 	SetOutPath $destination_dir
 	DetailPrint "Putting conf file in $destination_dir"
 
 	; push two arguments
-	; 1.File name as will be saved on local machine 
+	; 1.File name as will be saved on local machine
 	; 2.URL of the file to be downloaded
 ;	Push "ntua with IPv6.ovpn"
 ;	Push "http://www.noc.ntua.gr/openvpn/ntua%20with%20IPv6.ovpn"
@@ -174,8 +174,8 @@ Section "NTUA openvpn configuration files" OpenVPN_conf
 ;	Push "ntua-udp.ovpn"
 ;	Push "http://www.noc.ntua.gr/openvpn/ntua-udp.ovpn"
 ;	Call download_file
-;	Push "ntua-tcp.ovpn"	
-;	Push "http://www.noc.ntua.gr/openvpn/ntua-tcp.ovpn"	
+;	Push "ntua-tcp.ovpn"
+;	Push "http://www.noc.ntua.gr/openvpn/ntua-tcp.ovpn"
 ;	Call download_file
 ;	Push "cacert.crt"
 ;	Push "http://www.noc.ntua.gr/openvpn/cacert.crt"
@@ -184,7 +184,7 @@ Section "NTUA openvpn configuration files" OpenVPN_conf
 ;	Push "http://www.noc.ntua.gr/openvpn/ROOT-NTUA-cacert.crt"
 ;	Call download_file
 
-	
+
 SectionEnd
 
 Section "(only needed by Windows 8) Install Windows RASCMAK feature" rascmak_enable
@@ -199,10 +199,10 @@ Section "(only needed by Windows 8) Install Windows RASCMAK feature" rascmak_ena
 	!include "x64.nsh"
 
 	; 64-bit systems are redicting our calls to wow64, so we may have temporarily disable this redirection
-	${If} ${RunningX64} 
-		!insertmacro DisableX64FSRedirection 
+	${If} ${RunningX64}
+		!insertmacro DisableX64FSRedirection
 		ExecWait "${RASCMAK_INSTALL_COMMAND}"
-		!insertmacro EnableX64FSRedirection 
+		!insertmacro EnableX64FSRedirection
 	${Else}
 		ExecWait "${RASCMAK_INSTALL_COMMAND}"
 	${EndIf}
@@ -214,10 +214,10 @@ SectionEnd
 Section "(only needed by Windows 8) Modify OpenVPN-GUI to run as admin and in compatibility mode" openvpngui_modify
 
 	call detect_openvpn_destination
-	
+
 	ClearErrors
 	; ReadRegStr $openvpn_executable HKLM "SOFTWARE\OpenVPN-GUI" 'config_dir'
-	IfFileExists $openvpn_gui_exe continue1 
+	IfFileExists $openvpn_gui_exe continue1
 		MessageBox MB_ICONEXCLAMATION|MB_OK "$openvpn_gui_exe does not exist!"
 		Quit
 	continue1:
@@ -241,7 +241,7 @@ Function detect_openvpn_destination
 			DetailPrint "cannot find HKLM\Software\OpenVPN config_dir"
 			ReadRegStr $destination_dir HKLM "Software\OpenVPN" ''
 			ifErrors 0 default_dir_found
-				MessageBox MB_ICONEXCLAMATION|MB_OK "Unable to locate openvpn installation" IDOK 
+				MessageBox MB_ICONEXCLAMATION|MB_OK "Unable to locate openvpn installation" IDOK
 				Quit
 	default_dir_found:
 		DetailPrint "detected openvpn location $destination_dir"
@@ -273,20 +273,20 @@ FunctionEnd
 Function .onInit
 
 	!insertmacro MUI_LANGDLL_DISPLAY
-	
+
 	; !include "x64.nsh"
 
-	; StrCpy $R9 ${OpenVPN_installer} 
+	; StrCpy $R9 ${OpenVPN_installer}
 	; ${If} ${RunningX64}
-		; Call enable64 
-	; ${EndIf} 
+		; Call enable64
+	; ${EndIf}
 
 	${If} ${AtMostWin7}
 		!insertmacro UnselectSection ${rascmak_enable}
 		!insertmacro UnselectSection ${openvpngui_modify}
-	${EndIf}		
+	${EndIf}
 
-	StrCpy $rascmak_warned 0 
+	StrCpy $rascmak_warned 0
 	StrCpy $openvpn_gui_warned 0
 
 
@@ -294,29 +294,29 @@ FunctionEnd
 
 
 ; Function enable64
-		
+
 		; !insertmacro SelectSection ${OpenVPN_installer64}
-		
+
 		; !insertmacro UnselectSection ${OpenVPN_installer}
-		
-		; StrCpy $R9 ${OpenVPN_installer64} 
+
+		; StrCpy $R9 ${OpenVPN_installer64}
 ; FunctionEnd
 
 ; Function enable32
 
 		; !insertmacro SelectSection ${OpenVPN_installer}
-		
+
 		; !insertmacro UnselectSection ${OpenVPN_installer64}
-		
-		
-		; StrCpy $R9 ${OpenVPN_installer} 
+
+
+		; StrCpy $R9 ${OpenVPN_installer}
 ; FunctionEnd
 
 
 
 
 Function .onSelChange
-	
+
 	Push $0
 
 	${If} ${AtMostWin7}
@@ -326,7 +326,7 @@ Function .onSelChange
 			IntCmp $0 ${SF_SELECTED} 0 deselected deselected
 				StrCpy $rascmak_warned 1
 				MessageBox MB_ICONEXCLAMATION|MB_OKCANCEL  $(rascmak_warn) IDOK deselected
-					!insertmacro UnselectSection ${rascmak_enable}	
+					!insertmacro UnselectSection ${rascmak_enable}
 		deselected:
 
 		IntCmp $openvpn_gui_warned 0 0 deselected2 deselected2
@@ -338,7 +338,7 @@ Function .onSelChange
 					!insertmacro UnselectSection ${openvpngui_modify}
 		deselected2:
 	${EndIf}
-	
+
 	; SectionGetFlags ${OpenVPN_installer} $0
 	; IntOp $0 $0 & ${SF_SELECTED}
 	; IntCmp $0 ${SF_SELECTED} 0 deselected deselected
@@ -351,7 +351,7 @@ Function .onSelChange
 		; IntOp $0 $0 & ${SF_SELECTED}
 		; IntCmp $0 ${SF_SELECTED} done 0 0
 				; StrCmp $R9 ${OpenVPN_installer64} do32 do64
-	
+
 	; do64:
 	; Call enable64
 	; Goto done
@@ -359,17 +359,17 @@ Function .onSelChange
 	; Call enable32
 
 	; done:
- 
+
 	Pop $0
-	
+
 FunctionEnd
 
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
- 
+
   !insertmacro MUI_DESCRIPTION_TEXT ${OpenVPN_installer} $(DESC_OpenVPN_installer)
   ; !insertmacro MUI_DESCRIPTION_TEXT ${OpenVPN_installer64} $(DESC_OpenVPN_installer64)
   !insertmacro MUI_DESCRIPTION_TEXT ${OpenVPN_conf} $(DESC_Conf)
- 
+
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
