@@ -12,7 +12,8 @@ SetCompressor lzma
 
 ShowInstDetails show
 
-!define FILENAME "openvpn-install-2.3.14-I601-i686.exe"
+;!define FILENAME "openvpn-install-2.3.14-I601-i686.exe"
+!define FILENAME "openvpn-install-2.4.1-I601.exe"
 !define URL "http://swupdate.openvpn.org/community/releases/${FILENAME}"
 
 Var /GLOBAL destination_dir
@@ -213,6 +214,8 @@ SectionEnd
 
 Section "(only needed by Windows 8) Modify OpenVPN-GUI to run as admin and in compatibility mode" openvpngui_modify
 
+	SetRegView 64
+
 	call detect_openvpn_destination
 
 	ClearErrors
@@ -232,6 +235,9 @@ Section "(only needed by Windows 8) Modify OpenVPN-GUI to run as admin and in co
 SectionEnd
 
 Function detect_openvpn_destination
+
+	; On Windows x64 there are two views. One for 32-bit applications and one for x64 applications. By default, 32-bit applications running on x64 systems under WOW64 have access only to the 32-bit view. Using SetRegView 64 allows the installer to access keys in the x64 view of the registry.
+	SetRegView 64
 
 	ReadRegStr $destination_dir HKLM "SOFTWARE\OpenVPN-GUI" 'config_dir'
 	IfErrors 0 config_dir_ok
