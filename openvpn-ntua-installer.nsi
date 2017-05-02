@@ -170,7 +170,9 @@ Section "NTUA openvpn configuration files" OpenVPN_conf
 ;	Push "http://www.noc.ntua.gr/openvpn/ntua%20with%20IPv6.ovpn"
 ;	Call download_file
 	Push "ntua.ovpn"
-	Push "http://www.noc.ntua.gr/openvpn/ntua.ovpn"
+	Push "http://www.noc.ntua.gr/sites/default/files/software/ntua.ovpn"
+;	Push "http://www.noc.ntua.gr/openvpn/ntua.ovpn"
+;       Push http://ntua-noc.github.io/ntua-openvpn-client-configuration/ntua.ovpn
 	Call download_file
 ;	Push "ntua-udp.ovpn"
 ;	Push "http://www.noc.ntua.gr/openvpn/ntua-udp.ovpn"
